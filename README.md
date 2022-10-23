@@ -1,1 +1,1 @@
-# quasi-prime-peptides
+# Quasi Prime Peptides
