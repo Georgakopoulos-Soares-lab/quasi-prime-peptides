@@ -1,11 +1,8 @@
-import glob
 import itertools
 import time
 import json
 import os
 import logging
-
-# TODO: Remark to clarify documentation
 
 
 class PeptideFrequencies:
@@ -23,8 +20,6 @@ class PeptideFrequencies:
         self.peptide_length = peptide_length
         self.output_folder = output_folder
         self.timestamp = time.strftime('%Y%m%d_%H%M-', time.localtime())
-        # if not os.path.exists(self.output_folder):
-        #     os.makedirs(self.output_folder)
         if not os.path.exists(self.output_folder+"/logs"):
             os.makedirs(self.output_folder+"logs")
         logging.basicConfig(filename=self.output_folder+"logs/"+self.timestamp+"peptide_frequencies.log", encoding='utf-8', level=logging.DEBUG)
@@ -57,11 +52,13 @@ class PeptideFrequencies:
 
 
 if __name__ == "__main__":
+    import glob
+
     AMINO_ACIDS_LIST = ["G", "A", "L", "M", "F", "W", "K", "Q", "E", "S", "P", "V", "I", "C", "Y", "H", "R", "N", "D", "T"]
     PEPTIDE_LENGTH = 5
     OUTPUT_FOLDER = "output/peptide_frequencies/"
     PF = PeptideFrequencies(AMINO_ACIDS_LIST, PEPTIDE_LENGTH, OUTPUT_FOLDER)
-    # Warning: Randomly generated files - does not correspond to real data due to large file sizes
+
     categories = ["bacteria", "archaea", "viruses", "eukaryota"]
     for category in categories:
         files = glob.glob("test_files/*" + category + "*5mers")
