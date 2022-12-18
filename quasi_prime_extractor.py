@@ -20,7 +20,8 @@ class Quasi_Prime_Extractor:
     @staticmethod
     def read_kmers(file_list):
         """Generate a set containing the intersection of all kmer peptides in the input files
-        Input files are assumed to be contain kmers separated by a newline (see also accompanying test files on github)
+        Input files are assumed to be contain kmers separated by a newline (see also accompanying test files on github).
+        If a list with only one file is given, returns the set of all kmers contained in that file
         If input files are a different format, this function can be adapted/overloaded
         """
         kmer_set = set()
@@ -49,6 +50,28 @@ class Quasi_Prime_Extractor:
             for k in kmer_set:
                 f.write(k + '\n')
 
+    def calculate_intersections(self, kmer_files: list):
+        """
+        Calculate and store the intersection of all possible combinations of files given in the kmer_files list. Used for generating Venn diagrams for the
+        accompanying paper. It is recommended to first combine kmers to a few big lists of respective categories (e.g. domains of life and viruses), as
+        increasing the number of input files increases run time exponentially.
+        """
+        logging.info("Calculating the intersection of all possible combinations of the following kmer_files" + str(kmer_files))
+        from itertools import combinations
+        kmer_files_combinations = []
+        for i in range(2, len(kmer_files) + 1):
+            kmer_files_combinations += list(combinations(kmer_files, i))
+
+        kmer_dict = {}
+        for kmer_file in kmer_files:
+            kmer_dict[kmer_file] = self.read_kmers([kmer_file])  # read_kmers expects a list
+
+        with open(self.output_folder + self.timestamp + "_intersections.txt", "w") as f:
+            for combination in kmer_files_combinations:
+                # Calculate the intersection of all sets in # the combination
+                intersection = kmer_dict[combination[0]].intersection(*[kmer_dict[x] for x in combination[1:]])
+                f.write("Combination: " + str(combination) + "\n" + "Length of intersection: " + str(len(intersection)) + "\n" + str(intersection) + "\n")
+
 
 if __name__ == "__main__":
     import glob
@@ -58,3 +81,7 @@ if __name__ == "__main__":
     QPE = Quasi_Prime_Extractor("output/quasi_primes/")
     qp_set = QPE.extract_quasi_primes(BACKGROUND_FILES, QP_FILES)
     QPE.save_as_txt(qp_set)
+
+    # Calculate and store intersections of all possible combinations of all kmer_files below
+    QPE.calculate_intersections(["test_files/0_syntheticbacteria.5mers", "test_files/1_syntheticarchaea.5mers", "test_files/2_syntheticbacteria.5mers",
+                                 "test_files/3_syntheticarchaea.5mers"])
