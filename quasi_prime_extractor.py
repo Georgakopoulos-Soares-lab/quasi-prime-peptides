@@ -39,10 +39,10 @@ class Quasi_Prime_Extractor:
         background_kmer_set = self.read_kmers(background_files)
 
         # observer_kmer_set is the union of all unique kmer peptides found in species (or taxonomy) for which we want to extract quasi-primes
-        observed_kmer_set = self.read_kmers(QP_FILES)
+        observed_kmer_set = self.read_kmers(qp_files)
 
         # kmers present in observed_kmer_set but not background_kmer_set are quasi primes for the observed species (or taxonomy)
-        return observed_kmer_set.difference(qp_files)
+        return observed_kmer_set.difference(background_kmer_set)
 
     def save_as_txt(self, kmer_set):
         with open(self.output_folder + self.timestamp + ".txt", "w") as f:
